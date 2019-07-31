@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import StoryItem from './StoryItem';
+import UpdateStory from './UpdateStory';
 
 
 const URL = '/api/story';
@@ -38,6 +39,7 @@ export default class Story extends Component {
     }
 
     getAllStories = async() => {
+        console.log('get story working')
         const story = await fetch(URL, {credentials: 'include'})
         const stories = await story.json()
         this.setState({ 
@@ -45,6 +47,7 @@ export default class Story extends Component {
             stories: stories.message,
             loadStories: true
         })
+        console.log(this.state.stories)
     }
 
     getNextStory = async() => {
@@ -60,22 +63,25 @@ export default class Story extends Component {
     }
 
     render () {
-        if (this.state.loadStories){
+        if (this.state.loadStories) {
             let stories = this.state.stories;
             let story_detials = this.state.story_detials;
-            let storyItem = stories.map((story, index) => <StoryItem key={story.story_id} story={story} user={this.state.user} />);
+            const storyItem = stories.map((story) => <StoryItem key={story.story_id} story={story} user={this.state.user} />);
             return (
-                <>
-                hi
-                {/* <UpdateStory
-                    user_detials={this.state.user} 
-                    render={this.reRender}
-                />
-                {storyItem}
-                { story_detials.more ? <button type="button" onClick={this.getNextStory} className="btn btn-link">Load Stories....</button> : <></>} */}
-                </>
+            <>
+            <UpdateStory
+            user_detials={this.state.user}
+            render={this.reRender}
+            />
+            {storyItem}
+            { story_detials.more ? <button type="button" onClick={this.getNextStory} className="btn btn-link">Load Stories....</button> : <></>}
+            
+            
+            </>
             )
         }
+
+        
         return <></>
         
     }
