@@ -6,6 +6,7 @@ import Signup from '../components/Authentication/Signup';
 import Signin from '../components/Authentication/Signin';
 import LandingPage from '../components/LandingPage';
 import Profile from '../components/Profile/Profile';
+import Error from '../components/Error';
 
 
 function Child({ match }) {
@@ -21,8 +22,6 @@ function RouteConfig() {
     return (
         <>
         <Router>
-            <Route path='/signup' exact component={Signup} />
-            <Route path='/signin' exact component={Signin} />
             <Route path='/' exact component={Profile} />
             <Route path='/profile' exact component={Profile} />
             <Route path='/landing-page' excat component={LandingPage} />
