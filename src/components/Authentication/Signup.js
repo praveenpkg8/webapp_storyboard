@@ -28,8 +28,8 @@ export default class Signup extends Component {
         const setting = {
             method: 'POST',
             headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
               },
             body: JSON.stringify({
                 name: this.state.name,
@@ -37,8 +37,8 @@ export default class Signup extends Component {
                 password: this.state.password,
               })
             }
-        const user = await fetch(URL, setting)
-        .then(response => response.json())
+        const response = await fetch(URL, setting)
+        const user = await response.json()
         this.setState({
             name: '',
             mail: '',
