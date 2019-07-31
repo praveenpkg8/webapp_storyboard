@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 import Story from './Story/Story';
-import Logout from '../Authentication/Logout';
+import Button from './Button';
 
 const URL = '/api/auth';
 
@@ -91,7 +91,7 @@ export default class Profile extends Component {
                 <>
                 <div className='container'>
                 <User user={this.state.user} />
-                <Logout />
+                <Button />
                 <Story user={this.state.user} />
                 </div>
                 </>
