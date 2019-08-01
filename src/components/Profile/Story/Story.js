@@ -70,8 +70,8 @@ export default class Story extends Component {
             return (
             <>
             <UpdateStory
-            user_detials={this.state.user}
-            render={this.reRender}
+                user_detials={this.state.user}
+                render={this.reRender}
             />
             {storyItem}
             { story_detials.more ? <button type="button" onClick={this.getNextStory} className="btn btn-link">Load Stories....</button> : <></>}
