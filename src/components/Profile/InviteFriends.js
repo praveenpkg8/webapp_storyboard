@@ -1,9 +1,10 @@
 import React from 'react';
 const URL = 'http://localhost:8080';
+const ProductionURL = 'https://full-services.appspot.com'
 const InviteFriends = () => {
     return (
         <>
-        <a href={URL +'/api/contact/oauth'} className="btn btn-outline-success">Invite friends</a>
+        <a href={ProductionURL +'/api/contact/oauth'} className="btn btn-outline-success">Invite friends</a>
         </>
     )
 }
