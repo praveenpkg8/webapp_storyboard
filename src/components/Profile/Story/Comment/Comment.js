@@ -1,59 +1,86 @@
 import React, { Component } from 'react';
-
+import PropTypes from 'prop-types';
 
 import CommentItem from './CommentItem';
 import UpdateComment from './UpdateComment';
 
-export default class Comment extends Component {
-    constructor(props) {
-        super(props)
+class Comment extends Component {
+    static defaultProps = {
+        commentDetials: {},
+        story: {},
+        storyId: {},
+        commentList: [],
+        user: {},
+    };
 
-        this.state ={
-            comment_detials: props.commentDetials,
-            story: props.story,
-            story_id: props.story_id,
-            comments: props.commentList
-        }
-        
-    }    
+    constructor(props) {
+        super(props);
+        const {
+            commentDetials,
+            story,
+            storyId,
+            commentList,
+            user,
+        } = this.props;
+
+        this.state = {
+            commentDetials,
+            story,
+            storyId,
+            comments: commentList,
+            user,
+        };
+    }
+
 
     reRender = (data) => {
-        var comments = this.state.comments
-        var list = [data.message,...comments]
+        const { comments } = this.state;
+        const list = [data.message, ...comments];
         this.setState({
-            comments: list
-        })
+            comments: list,
+        });
     }
 
-    
-
-    getNextCommment = async() => {
-        var _comments = this.state.comment_detials;
-        let comment_list = this.state.comments;
-        var url = '/api/comment?story_id=' + this.state.story_id + '&next_cursor=' + _comments.next_cursor
-        const comments = await fetch(url)
-        .then(response => response.json())
-        var arr_comments = [...comment_list, ...comments.comment]
+    getNextCommment = async () => {
+        const { storyId, comments, commentDetials } = this.state;
+        const url = `/api/comment?story_id=${storyId}&next_cursor=${commentDetials.commentDetials.next_cursor}`;
+        const response = await fetch(url);
+        const nextComment = await response.json();
+        const arrComments = [...comments, ...nextComment.comment];
+        const commentDet = {
+            commentDetials: nextComment,
+        };
         this.setState({
-            comments: arr_comments,
-            comment_detials: comments
-        }) 
+            comments: arrComments,
+            commentDetials: commentDet,
+        });
     }
 
-
-    componentDidMount() {
-    }
     render() {
-        var _comments = this.state.comment_detials
-        const comments = this.state.comments
-        const commentItem = comments.map((comment, index) => <CommentItem key={comment.comment_id} comment={comment} />)
+        const {
+            user, story, comments, commentDetials,
+        } = this.state;
+        const moreComment = commentDetials.commentDetials.more;
+        const { Story } = story;
+        /* eslint max-len: ["error", { "code": 160 }] */
+        const commentItem = comments.map(comment => <CommentItem key={comment.comment_id} comment={{ comment }} />);
         return (
-        <>
-        < UpdateComment user={this.props.user} stories={this.state.story} render={this.reRender}/>
+            <>
+                <UpdateComment user={{ user }} stories={{ Story }} render={this.reRender} />
 
-        {commentItem}
-        {_comments.more ? <button type="button" onClick={this.getNextCommment} className="btn btn-link">Load Comment....</button> : <></> }
-        </>
-        )
+                {commentItem}
+                {moreComment ? <button type="button" onClick={this.getNextCommment} className="btn btn-link">Load Comment....</button> : <></> }
+            </>
+        );
     }
 }
+
+Comment.propTypes = {
+    commentDetials: PropTypes.objectOf(PropTypes.object),
+    story: PropTypes.objectOf(PropTypes.object),
+    storyId: PropTypes.string,
+    commentList: PropTypes.instanceOf(Array),
+    user: PropTypes.objectOf(PropTypes.object),
+};
+
+export default Comment;
