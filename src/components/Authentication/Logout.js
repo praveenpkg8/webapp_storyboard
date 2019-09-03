@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom'
+import { Redirect } from 'react-router-dom';
 
 import Cookies from 'js-cookie';
 
@@ -9,33 +9,32 @@ export default class Logout extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            render: false
-        }
+            render: false,
+        };
     }
 
-    onLogout = async() => {
-        let session = Cookies.get('session');
+    onLogout = async () => {
+        const session = Cookies.get('session');
         try {
-            const response = await fetch( URL + '?session=' + session);
-            const data = response.json();
+            await fetch(`${URL}?session=${session}`);
             Cookies.set('session', undefined);
             this.setState({
-                render: true
-            })
-        }catch{
-            console.log('error occured')
+                render: true,
+            });
+        } catch {
+        // Error occured
         }
     }
 
     render() {
-        if(this.state.render) {
-            return <Redirect to='/profile' />
+        const { render } = this.state;
+        if (render) {
+            return <Redirect to="/landing-page" />;
         }
         return (
             <>
-            <button className='btn btn-outline-danger' onClick={this.onLogout} >Logout</button>
+                <button type="button" className="btn btn-outline-danger" onClick={this.onLogout}>Logout</button>
             </>
-
-        )
+        );
     }
 }
