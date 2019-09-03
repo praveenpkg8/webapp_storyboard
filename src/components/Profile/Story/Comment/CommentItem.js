@@ -1,18 +1,27 @@
-import React, { Component } from 'react'
+import React from 'react';
+import PropTypes from 'prop-types';
 
-export default class CommentItem extends Component {
-    comment = this.props.comment;
-    render() {
-        var comment = this.comment;
-        return ( 
-            <>
+const CommentItem = (props) => {
+    const { comment } = props;
+    const Comment = comment.comment;
+    return (
+        <>
             <div>
-            <span className="badge badge-pill badge-secondary">{comment.name}</span>  {comment.comment}
-            <hr/>
+                <span className="badge badge-pill badge-secondary">{Comment.name}</span>
+                {' '}
+                {Comment.comment}
+                <hr />
             </div>
-            </>
-        )
-    }
-}
+        </>
+    );
+};
 
-// TODO
+CommentItem.defaultProps = {
+    comment: {},
+};
+
+CommentItem.propTypes = {
+    comment: PropTypes.objectOf(PropTypes.object),
+};
+
+export default CommentItem;
