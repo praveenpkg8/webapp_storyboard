@@ -1,34 +1,53 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
-import Signup from '../components/Authentication/Signup';
-import Signin from '../components/Authentication/Signin';
+
 import LandingPage from '../components/LandingPage';
 import Profile from '../components/Profile/Profile';
-import Error from '../components/Error';
+import Singnin from '../components/Authentication/Signin';
+import Reset from '../components/Authentication/Reset';
+import ResetPassword from '../components/Authentication/ResetPassword';
 
 
 function Child({ match }) {
-    Cookies.set('session', match.params.id)
+    Cookies.set('session', match.params.id);
     return (
-          <>
-          <Redirect to='' />
-          </>
-      );
-      }
+        <>
+            <Redirect to="" />
+        </>
+    );
+}
+
+
+Child.defaultProps = {
+    match: '',
+};
+
+Child.propTypes = {
+    match: PropTypes.string,
+};
+
 
 function RouteConfig() {
     return (
         <>
-        <Router>
-            <Route path='/' exact component={Profile} />
-            <Route path='/profile' exact component={Profile} />
-            <Route path='/landing-page' excat component={LandingPage} />
-            <Route path="/sign/:id" component={Child}/>
-        </Router>
+            <Router>
+                <Route path="/" exact component={Profile} />
+                <Route path="/profile" exact component={Profile} />
+                <Route path="/landing-page" exact component={LandingPage} />
+                <Route path="/signin" exact component={Singnin} />
+                <Route path="/sign/:id" component={Child} />
+                <Route path="/reset" component={ResetPassword} />
+                <Route
+                    path="/reset-password/:id"
+                    render={props => <Reset {...props} />}
+                />
+
+            </Router>
         </>
-    )
+    );
 }
 
 export default RouteConfig;
