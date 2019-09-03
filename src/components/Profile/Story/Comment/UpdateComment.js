@@ -1,77 +1,104 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
-export default class UpdateComment extends Component {
+class UpdateComment extends Component {
+    flag = true;
+
+    static defaultProps = {
+        user: {},
+        stories: {},
+        render: '',
+    };
+
+
     constructor(props) {
         super(props);
         this.state = {
             comment: '',
-            user: props.user,
-            stories: props.stories
-        }
+            user: props.user.user,
+            stories: props.stories.Story,
+        };
     }
-    flag = true
+
     handleChange = (event) => {
-        var target = event.target;
-        const name = target.name;
-        const value = target.value;
+        const { target } = event;
+        const { name } = target;
+        const { value } = target;
         this.setState({
-            [name]: value
-          });
+            [name]: value,
+        });
     }
 
     async postComment() {
         if (this.flag) {
-            this.flag = false
-            let user = this.state.user;
-            let story = this.state.stories;
-            let _comment = this.state.comment;
-            if (_comment === '') {
+            this.flag = false;
+            const { user, stories, comment } = this.state;
+            if (comment === '') {
                 this.flag = true;
                 return null;
             }
-            this.setState({ 
+            this.setState({
                 comment: '',
-            })
+            });
             const setting = {
                 method: 'POST',
                 headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                    },
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
                 body: JSON.stringify({
-                    story_id: story.story_id,
-                    mail: user.mail,
-                    name: user.name,
-                    comment: _comment
-                    })
-            }
+                    story_id: stories.story_id,
+                    mail: user.user.mail,
+                    name: user.user.name,
+                    comment,
+                }),
+            };
             const commentResponse = await fetch('/api/comment', setting);
-            const comment = await commentResponse.json();
-            if (commentResponse.status === 200){
-                this.props.render(comment)
+            const Updatedcomment = await commentResponse.json();
+            const { render } = this.props;
+            if (commentResponse.status === 200) {
+                render(Updatedcomment);
                 this.flag = true;
             }
         }
-        
-        
-
+        return null;
     }
 
     render() {
+        const { comment } = this.state;
         return (
             <>
-            <div className="input-group mb-3">
-                             <input 
-                             name='comment'
-                             type='text'
-                             value={this.state.comment}
-                             onChange={this.handleChange}
-                             className="form-control" placeholder="Comment" aria-label="Comment" aria-describedby="button-addon2" />
-                             <div className="input-group-append">
-                                <button onClick={() => this.postComment()} className="btn btn-outline-secondary">Comment</button>
-                            </div>
-                        </div>
+                <div className="input-group mb-3">
+                    <input
+                        name="comment"
+                        type="text"
+                        value={comment}
+                        onChange={this.handleChange}
+                        className="form-control"
+                        placeholder="Comment"
+                        aria-label="Comment"
+                        aria-describedby="button-addon2"
+                    />
+                    <div className="input-group-append">
+                        <button
+                            type="button"
+                            onClick={() => this.postComment()}
+                            className="btn btn-outline-secondary"
+                        >
+Comment
+                        </button>
+                    </div>
+                </div>
             </>
-        )
+        );
     }
 }
+
+UpdateComment.propTypes = {
+    render: PropTypes.func,
+    stories: PropTypes.objectOf(PropTypes.object),
+    user: PropTypes.objectOf(PropTypes.object),
+};
+
+
+export default UpdateComment;
