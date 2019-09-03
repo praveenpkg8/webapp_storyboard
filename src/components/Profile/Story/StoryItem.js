@@ -1,85 +1,117 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import Comment from './Comment/Comment';
 
 const displayDate = (date) => {
-    var _date = new Date(date);
-    var today = new Date();
-    if (_date.getDate() === today.getDate()) {
-        return "Today " + _date.toLocaleTimeString();
+    const Ddate = new Date(date);
+    const today = new Date();
+    if (Ddate.getDate() === today.getDate()) {
+        return `Today ${Ddate.toLocaleTimeString()}`;
     }
-    else if (_date.getDate() === today.getDate() - 1){
-        return "Yesterday " + _date.toLocaleTimeString();
+    if (Ddate.getDate() === today.getDate() - 1) {
+        return `Yesterday ${Ddate.toLocaleTimeString()}`;
     }
-    return _date.toLocaleString();
-}
+    return Ddate.toLocaleString();
+};
 
 class Like extends Component {
+    flag = true;
+
+    static defaultProps = {
+        story: {},
+        user: {},
+    };
+
     constructor(props) {
         super(props);
         this.state = {
-            like_count: props.story.like_count,
-            liked: props.story.liked,
-            story: props.story,
-            user: props.user
-        }
+            likeCount: props.story.Story.like_count,
+            liked: props.story.Story.liked,
+            story: props.story.Story,
+            user: props.user.user,
+        };
     }
-    flag = true;
 
 
-    updateLike = async() => {
+    updateLike = async () => {
         if (this.flag) {
-            this.flag = false
-            var story = this.state.story;
-            var user = this.state.user;
-            var url = '/api/like?story_id=' + story.story_id + '&mail=' + user.mail;
-            const response = await fetch(url)
-            const like = await response.json()
-            if (response.status === 200){
+            this.flag = false;
+            const { story } = this.state;
+            const { user } = this.state;
+            const url = `/api/like?story_id=${story.story_id}&mail=${user.mail}`;
+            const response = await fetch(url);
+            const like = await response.json();
+            if (response.status === 200) {
                 this.flag = true;
             }
             this.setState({
-                like_count: like.count,
-                liked: like.status
-            })
+                likeCount: like.count,
+                liked: like.status,
+            });
         }
-        
     }
 
     render() {
+        const { liked, likeCount } = this.state;
         return (
             <>
-            <span  onClick={this.updateLike}className="btn badge badge-primary">{this.state.liked ? <>unlike</> : <>like</>} <span className="badge badge-primary">{this.state.like_count}</span></span>
+                <button type="button" onClick={this.updateLike} className="btn badge badge-primary">
+                    {liked ? <>unlike</> : <>like</>}
+                    {' '}
+                    <span className="badge badge-primary">{likeCount}</span>
+                </button>
             </>
-        )
+        );
     }
 }
-export default class StoryItem extends Component {
-    render() {
-        var story = this.props.story
-        var day = displayDate(story.time);
-        return (
-              <>
-              <div className="card w-75">
-                    <div className="card-body">
-                        <h5 className="card-title">{story.name}</h5>
-                        <span className="badge-inline badge-pill badge-light">{day}</span>
-                        <p className="card-text">{story.story}</p>
-                        <Like 
-                        key={this.props.story.story_id} 
-                        user={this.props.user} 
-                        story={story} 
-                        />
-                        <Comment  
-                        story={story}
-                        story_id={story.story_id} 
-                        commentDetials={story.comments} 
-                        commentList={story.comments.comment}
-                        user={this.props.user}
-                        />
-                    </div>
+
+Like.propTypes = {
+    story: PropTypes.objectOf(PropTypes.object),
+    user: PropTypes.objectOf(PropTypes.object),
+
+};
+
+const StoryItem = (props) => {
+    const { story, user } = props;
+    const Story = story.story;
+    const commentDetials = Story.comments;
+    const day = displayDate(Story.time);
+
+    return (
+        <>
+            <div className="card w-75">
+                <div className="card-body">
+                    <h5 className="card-title">{Story.name}</h5>
+                    <span className="badge-inline badge-pill badge-light">{day}</span>
+                    <p className="card-text">{Story.story}</p>
+                    { Story.edit ? <div>can edit</div> : <div />}
+                    <Like
+                        key={story.story.story_id}
+                        user={{ user }}
+                        story={{ Story }}
+                    />
+                    <Comment
+                        story={{ Story }}
+                        storyId={Story.story_id}
+                        commentDetials={{ commentDetials }}
+                        commentList={Story.comments.comment}
+                        user={user}
+                    />
                 </div>
-              </>
-        )
-    }
-}
+            </div>
+        </>
+    );
+};
+
+StoryItem.defaultProps = {
+    story: {},
+    user: {},
+};
+
+StoryItem.propTypes = {
+    story: PropTypes.objectOf(PropTypes.object),
+    user: PropTypes.objectOf(PropTypes.object),
+};
+
+export default StoryItem;
