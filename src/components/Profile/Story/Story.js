@@ -1,88 +1,98 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import StoryItem from './StoryItem';
 import UpdateStory from './UpdateStory';
 
 
 const URL = '/api/story';
+class Story extends Component {
+    static defaultProps = {
+        user: {},
+    };
 
-export default class Story extends Component {
     constructor(props) {
         super(props);
         this.state = {
             stories: [],
             loadStories: false,
             user: props.user,
-            story: "",
-        }
-    }
-
-    handleChange = (event) => {
-        var target = event.target;
-        const name = target.name;
-        const value = target.value;
-        this.setState({
-            [name]: value
-          });
-
+        };
     }
 
     componentWillMount() {
-        this.getAllStories ()
+        this.getAllStories();
     }
+
+
+    handleChange = (event) => {
+        const { target } = event;
+        const { name } = target;
+        const { value } = target;
+        this.setState({
+            [name]: value,
+        });
+    }
+
 
     reRender = (data) => {
-        let story = this.state.stories
-        let list = [data.message,...story]
+        const { stories } = this.state;
+        const list = [data.message, ...stories];
         this.setState({
-            stories: list
-        })
+            stories: list,
+        });
     }
 
-    getAllStories = async() => {
-        console.log('get story working')
-        const story = await fetch(URL, {credentials: 'include'})
-        const stories = await story.json()
-        this.setState({ 
-            story_detials: stories,
+    getAllStories = async () => {
+        const story = await fetch(URL, { credentials: 'include' });
+        const stories = await story.json();
+        this.setState({
+            storyDetials: stories,
             stories: stories.message,
-            loadStories: true
-        })
-        console.log(this.state.stories)
+            loadStories: true,
+        });
     }
 
-    getNextStory = async() => {
-        let story_detials = this.state.story_detials
-        let url = '/api/story?next_cursor=' + story_detials.next_cursor
-        const response = await fetch(url, {credentials: 'include'})
-        const stories = await response.json()
-        let story = [...this.state.stories, ...stories.message]
+    getNextStory = async () => {
+        const { storyDetials, stories } = this.state;
+        const url = `/api/story?next_cursor=${storyDetials.next_cursor}`;
+        const response = await fetch(url, { credentials: 'include' });
+        const resStories = await response.json();
+        const story = [...stories, ...resStories.message];
         this.setState({
-            story_detials: stories,
-            stories: story
-        })
+            storyDetials: resStories,
+            stories: story,
+        });
     }
 
-    render () {
-        if (this.state.loadStories) {
-            let stories = this.state.stories;
-            let story_detials = this.state.story_detials;
-            const storyItem = stories.map((story) => <StoryItem key={story.story_id} story={story} user={this.state.user} />);
+    render() {
+        const {
+            loadStories, stories, storyDetials, user,
+        } = this.state;
+        if (loadStories) {
+        /* eslint max-len: ["error", { "code": 160 }] */
+
+            const storyItem = stories.map(story => <StoryItem key={story.story_id} story={{ story }} user={{ user }} />);
             return (
-            <>
-            <UpdateStory
-                user_detials={this.state.user}
-                render={this.reRender}
-            />
-            {storyItem}
-            { story_detials.more ? <button type="button" onClick={this.getNextStory} className="btn btn-link">Load Stories....</button> : <></>}
-            
-            
-            </>
-            )
+                <>
+                    <UpdateStory
+                        user_detials={{ user }}
+                        render={this.reRender}
+                    />
+                    {storyItem}
+                    { storyDetials.more ? <button type="button" onClick={this.getNextStory} className="btn btn-link">Load Stories....</button> : <></>}
+
+
+                </>
+            );
         }
 
-        
-        return <></>
-        
+
+        return <></>;
     }
 }
+
+Story.propTypes = {
+    user: PropTypes.instanceOf(Object),
+};
+
+export default Story;
