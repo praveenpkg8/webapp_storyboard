@@ -1,14 +1,13 @@
 import React from 'react';
-import LandingPage from './components/LandingPage';
 
-import RouteConfig from './RouteConfig/RouteConfig'
+import RouteConfig from './RouteConfig/RouteConfig';
 
 function App() {
     return (
         <>
-        <RouteConfig />
+            <RouteConfig />
         </>
-    )
+    );
 }
 
 export default App;
